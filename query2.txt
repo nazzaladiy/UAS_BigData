@@ -1,0 +1,17 @@
+SELECT
+  MIN(start_station_name) as start_station_name,
+  MIN(end_station_name) as end_station_name,
+  APPROX_QUANTILES(tripduration, 10) [OFFSET (5) ] AS 
+typical_duration,
+  COUNT(tripduration) as num_trips
+FROM
+  `uasbigdata-355008.nyc_citi_bike_trips.citibike_trips`
+WHERE
+  start_station_id != end_station_id
+GROUP BY
+  start_station_id,
+  end_station_id
+ORDER BY
+  num_trips DESC
+LIMIT
+  10

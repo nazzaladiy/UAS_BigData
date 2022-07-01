@@ -1,0 +1,24 @@
+WITH
+  trip_distance AS (
+    SELECT
+      bikeId,
+      ST_DISTANCE(ST_GEOGPOINT(s.longitude, s.latitude), 
+        ST_GEOGPOINT(e.longitude, e.latitude)) AS distance
+FROM
+  `uasbigdata-355008.nyc_citi_bike_trips.citibike_trips`,
+  `uasbigdata-355008.nyc_citi_bike_trips.citibike_stations` as s,
+  `uasbigdata-355008.nyc_citi_bike_trips.citibike_stations` as e
+WHERE 
+  start_station_id = s.station_id
+  AND end_station_id = e.station_id )
+SELECT 
+  bikeId,
+  SUM(distance)/1000 AS total_distance
+FROM
+  trip_distance
+GROUP BY
+  bikeId
+ORDER BY 
+  total_distance DESC
+LIMIT
+  5
